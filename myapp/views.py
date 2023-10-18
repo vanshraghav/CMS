@@ -73,7 +73,7 @@ def generate_unique_random_number(length):
 def booking_confirm(request):
     if request.method == 'POST':
         recaptcha_response = request.POST.get('g-recaptcha-response')
-        secret_key = '6Le0RJgoAAAAAGVPLP8z_zbyuQn-Kwyo4frr_t41'
+        secret_key = ''
         data = {
             'secret': secret_key,
             'response': recaptcha_response
