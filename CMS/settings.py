@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-nf)ks-sn&fm8=0)_&!d(@t0@!j3+nua293b39im=zst%gj@-93
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['vr7017366984.pythonanywhere.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -54,8 +54,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'vr7017366984@gmail.com'
-EMAIL_HOST_PASSWORD = 'mhqhiawojxwnhwfw'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 
 ROOT_URLCONF = 'CMS.urls'
 
@@ -86,10 +86,10 @@ WSGI_APPLICATION = 'CMS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vr7017366984$default',
-        'USER': 'vr7017366984',
-        'PASSWORD': 'Vansh@123',
-        'HOST': 'vr7017366984.mysql.pythonanywhere-services.com',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
     }
 }
 # Password validation
@@ -135,7 +135,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # default static files settings for PythonAnywhere.
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
-MEDIA_ROOT = '/home/vr7017366984/CMS/media'
+MEDIA_ROOT = ''
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/vr7017366984/CMS/static'
+STATIC_ROOT = ''
 STATIC_URL = '/static/'
