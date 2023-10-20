@@ -19,7 +19,7 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
-            color: #000000; 
+            color: #000000;
         }
 
         .cards-container {
@@ -67,7 +67,7 @@
             border: none;
             cursor: pointer;
         }
-        
+
         .download-button:hover {
             background-color: #FF4D4D;
         }
@@ -97,13 +97,13 @@
 <body>
     {% if message %}
             <h3 style="align-items: center;display:flex;justify-content:center;">Oops, We didn't find any Booking</h3>
-    
+
     {% else %}
     <h1>Your Bookings</h1>
-    
+
 
     <div class="cards-container">
-        
+
         {% for booking in user_bookings %}
         <div class="card">
             <h3>Tracking ID: {{ booking.tracking_id }}</h3>
@@ -113,7 +113,7 @@
             <p>Pickup Address: {{ booking.pickup_address }}</p>
             <p>Delivery Address: {{ booking.delivery_address }}</p>
             <p>Package Description: {{ booking.package_description }}</p>
-            
+
             <p>Booking Date: {{booking.booking_date}}</p>
             <p>Expected Delivery Date: {{booking.expected_date}}</p>
 
@@ -124,12 +124,21 @@
     </div>
     {% endif %}
     <div class="back-button">
-        <button onclick="goBack()">Back</button>
+
+        <button class="button" onclick="goBack({{ isAuthenticated|yesno:"true,false" }})">Back</button>
+
+
+
     </div>
-    
+
     <script>
-        function goBack() {
-            window.history.back();
+        function goBack(isAuthenticated) {
+
+            if (isAuthenticated === "true") {
+                window.location.href = '/dashboard';
+            } else {
+                window.history.back();
+            }
         }
     </script>
 </body>

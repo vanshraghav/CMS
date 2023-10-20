@@ -87,7 +87,7 @@
       background: #FF4D4D;
     }
 
-   
+
     .logout-button {
       position: absolute;
       top: 20px;
@@ -125,7 +125,7 @@
       <div class="option-card">
         <h2>Book a Courier</h2>
         <p>Book a courier to send your packages.</p>
-        <a href="/booking?username={{user.username}}">Book Now</a>
+        <a href="/booking?username={{user.username}}andisAuthenticated={{isAuthenticated}}">Book Now</a>
       </div>
 
       <div class="option-card">

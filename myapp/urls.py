@@ -6,7 +6,7 @@ urlpatterns =[
     path('signup',views.signup),
     path('register',views.register),
     path('logout',views.logout),
-    path('login',views.login),
+    path('login',views.login_page),
     path('after_login',views.login_check),
     path('booking',views.booking),
     path('booking_confirm',views.booking_confirm),
@@ -21,6 +21,7 @@ urlpatterns =[
     path('changepwd',views.change_password),
     path('about',views.about),
     path('faq',views.about),
+    path('dashboard',views.dashboard),
 
 ]
 

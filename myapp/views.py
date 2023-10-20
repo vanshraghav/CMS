@@ -1,12 +1,16 @@
 
 from django.shortcuts import render,HttpResponse,redirect
-from .models import Info,Booking
+from .models import Booking
+from django.contrib.auth.models import User
+from django.contrib.auth import logout as django_logout
 import random
 from django.utils.crypto import get_random_string
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 from .utils import check_internet_connection
 import requests
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 def about(request):
     return HttpResponse("<h1>Coming Soon ...</h1>")
 
@@ -47,17 +51,16 @@ def track_bookings(request):
     else:
         message = 'No bookings found for the given tracking ID.'
     return render(request, 'view_bookings.html', {'user_bookings': user_bookings, 'message': message})
-
+@login_required
 def view_bookings(request):
-    # if not check_internet_connection():
-    #     return render(request,'404.html')
-    username = request.GET.get('username')
+    isAuthenticated=True;
+    username = request.user
     user_bookings = Booking.objects.filter(booking_user=username)
     if user_bookings.exists():
         message = None
     else:
         message = 'No bookings found for the given tracking ID.'
-    return render(request, 'view_bookings.html', {'user_bookings': user_bookings, 'message': message})
+    return render(request, 'view_bookings.html', {'user_bookings': user_bookings, 'message': message,'isAuthenticated':True})
 
 def generate_unique_random_number(length):
 
@@ -69,7 +72,7 @@ def generate_unique_random_number(length):
         if random_number not in generated_tracking_numbers:
             generated_tracking_numbers.add(random_number)
             return random_number
-
+@login_required
 def booking_confirm(request):
     if request.method == 'POST':
         recaptcha_response = request.POST.get('g-recaptcha-response')
@@ -83,7 +86,7 @@ def booking_confirm(request):
 
         if not result['success']:
             return render(request, 'booking.html', {'message': 'Captcha Verification Failed'})
-        booking_user = request.POST.get('booking_user')
+        booking_user = request.user
         sender_name = request.POST.get('sender_name')
         receiver_name = request.POST.get('receiver_name')
         pickup_address = request.POST.get('pickup_address')
@@ -112,7 +115,8 @@ def booking_confirm(request):
             'receiver_name': receiver_name,
             'pickup_address': pickup_address,
             'delivery_address': delivery_address,
-            'package_description': package_description
+            'package_description': package_description,
+            'isAuthenticated':True
         })
     else:
         return redirect('receipt')
@@ -124,22 +128,19 @@ def signup(request):
     # if not check_internet_connection():
     #     return render(request,'404.html')
     return render(request,'signup.html')
-def login(request):
+def login_page(request):
     # if not check_internet_connection():
     #     return render(request,'404.html')
     return render(request,'login.html')
+@login_required
 def booking(request):
-    # if not check_internet_connection():
-    #     return render(request,'404.html')
-    username = request.GET.get('username')
-    return render(request,'booking.html',{'username':username})
+    isAuthenticated=True;
+    username = request.user
+    return render(request,'booking.html',{'username':username,'isAuthenticated':isAuthenticated})
 def logout(request):
-    # if not check_internet_connection():
-    #     return render(request,'404.html')
+    django_logout(request)
     return render(request, 'login.html', {'message': 'Logout Successfully'})
 def login_check(request):
-    # if not check_internet_connection():
-    #     return render(request,'404.html')
     global username
     username = ''
     if request.method == "POST":
@@ -159,13 +160,22 @@ def login_check(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         try:
-            user = Info.objects.get(username=username, password=password)
-            first_name = user.first_name
-
-            return render(request, 'dashboard.html', {'user': user,'first_name':first_name})
-        except Info.DoesNotExist:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                first_name = user.first_name
+                return redirect('/dashboard')
+            else:
+                return render(request, 'login.html', {'message': 'Invalid UserName or Password.'})
+        except User.DoesNotExist:
             return render(request, 'login.html', {'message': 'Invalid UserName or Password.'})
     return render(request, 'login.html')
+@login_required
+def dashboard(request):
+    isAuthenticated=True
+    user = request.user
+    firstname= user.first_name
+    return render(request, 'dashboard.html', {'user': user,'first_name':firstname ,'isAuthenticated': isAuthenticated})
 # def register(request):
 #     if not check_internet_connection():
 #         return render(request,'404.html')
@@ -187,8 +197,6 @@ def login_check(request):
 #             return render(request,'signup.html',{'error':'Password and Confirm Password Fields Must Match'})
 #     return redirect('signup')
 def register(request):
-    # if not check_internet_connection():
-    #     return render(request, '404.html')
 
     if request.method == 'POST':
         recaptcha_response = request.POST.get('g-recaptcha-response')
@@ -209,12 +217,11 @@ def register(request):
         lastname = request.POST['last_name']
         email = request.POST['email']
 
-        if Info.objects.filter(username=username).exists():
-            return render(request,'signup.html',{'error':'Username Already Taken'})
-        if Info.objects.filter(email=email).exists():
-            return render(request,'signup.html',{'error':'Account already exists with this email'})
-        if(password==confpassword):
-        # Generate OTP
+        if User.objects.filter(username=username).exists():
+            return render(request, 'signup.html', {'error': 'Username Already Taken'})
+
+        if password == confpassword:
+            # Create a new user using Django's User model
             otp = generate_otp()
 
         # Send OTP via email
@@ -232,13 +239,13 @@ def register(request):
             }
 
             return render(request, 'verify_otp.html', {'email': email})
+
         else:
             return render(request,'signup.html',{'error':'Password and Confirm Password Fields Must Match'})
     return redirect('signup')
 
 def verify_otp(request):
-    # if not check_internet_connection():
-    #     return render(request, '404.html')
+
     user_data = request.session.get('user_data', {})
     email = user_data.get('email', '')
     stored_otp = request.session.get('otp')
@@ -253,9 +260,12 @@ def verify_otp(request):
             lastname = user_data.get('lastname', '')
 
 
-            user = Info(first_name=firstname, last_name=lastname,
-                        username=username, email=email, password=password)
+            user = User.objects.create_user(username, email, password)
+            user.first_name = firstname
+            user.last_name = lastname
             user.save()
+
+
 
             # Clear the session data
             request.session.pop('user_data', None)
@@ -293,11 +303,10 @@ def custom_logout(request):
     django_logout(request)
     return redirect('/')
 def forgot_verify(request):
-    # if not check_internet_connection():
-    #     return render(request,'404.html')
+
     if request.method =='POST':
         email = request.POST['email']
-    if Info.objects.filter(email=email).exists():
+    if User.objects.filter(email=email).exists():
         otp = generate_otp()
 
         # Send OTP via email
@@ -342,6 +351,7 @@ def change_password(request):
     #     return render(request, '404.html')
     user_data = request.session.get('user_data_forgot', {})
     email = user_data.get('email', '')
+    name = user_data.get('first_name','')
     print(email)
     if request.method == 'POST':
         password = request.POST['new_password']
@@ -349,9 +359,8 @@ def change_password(request):
         print(password)
         if password==confirm_password:
 
-            user = Info.objects.get(email=email)
-            user.password = password
-            name = user.first_name
+            user = User.objects.get(email=email)
+            user.set_password(password)
             user.save()
             send_password_change_mail(email,name)
 

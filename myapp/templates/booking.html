@@ -157,14 +157,22 @@
                 <div class="g-recaptcha" data-sitekey="6Le0RJgoAAAAACNOovjVBKc9Y-8sYOtq0LIOnq29"></div>
             </div>
             <button type="submit" class="submit-button">Book</button>
-            <button class="button" onclick="goBack()">Back</button>
+
         </form>
+        <button class="button" onclick="goBack({{ isAuthenticated|yesno:"true,false" }})">Back</button>
     </div>
     <div class="loading"></div>
     <script>
-        function goBack() {
-            window.history.back();
+
+        function goBack(isAuthenticated) {
+
+            if (isAuthenticated === "true") {
+                window.location.href = '/dashboard';
+            } else {
+                window.history.back();
+            }
         }
+
         function showLoader() {
             // Show the loading spinner
             toggleLoadingSpinner(true);

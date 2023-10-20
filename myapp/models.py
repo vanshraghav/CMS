@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
+from django.contrib.auth.models import User
 # Create your models here.
 def calculate_default_expected_date():
     # Calculate the default expected date as booking date + 7 days
@@ -8,12 +9,12 @@ def calculate_default_expected_date():
 def calculate_default_booking_date():
     # Calculate the default expected date as booking date + 7 days
     return timezone.now().date()
-class Info(models.Model):
-    first_name=models.TextField(default='Hi')
-    last_name=models.TextField(default='Hi') 
-    username =models.TextField(default='Hi')
-    email=models.EmailField(unique=True)
-    password=models.TextField(default='Hi')
+# class Info(models.Model):
+#     first_name=models.TextField(default='Hi')
+#     last_name=models.TextField(default='Hi')
+#     username =models.TextField(default='Hi')
+#     email=models.EmailField(unique=True)
+#     password=models.TextField(default='Hi')
 class Booking(models.Model):
     booking_user = models.CharField(max_length=100)
     sender_name = models.CharField(max_length=100)

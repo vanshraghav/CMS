@@ -11,7 +11,7 @@
             line-height: 1.5;
             font-size: 16px;
             color: #333;
-            
+
             padding: 0;
             margin: 0;
             display: flex;
@@ -85,7 +85,7 @@
 
         <div class="buttons">
             <button class="button" onclick="downloadReceipt()">Download Receipt</button>
-            <button class="button" onclick="goBack()">Back</button>
+            <button class="button" onclick="goBack({{ isAuthenticated|yesno:"true,false" }})">Back</button>
         </div>
     </div>
 
@@ -97,20 +97,20 @@
             const pickup_address = "{{ pickup_address }}";
             const delivery_address = "{{ delivery_address }}";
             const package_description = "{{ package_description }}";
-        
+
             const url = `/generate_pdf/${tracking_id}/${sender_name}/${receiver_name}/${pickup_address}/${delivery_address}/${package_description}/`;
             window.open(url, '_blank');
         }
-        
-        function goBack() {
-            const currentIPAddress = window.location.hostname; // Get the current IP address
-            const port = window.location.port; // Get the current port
-            const url = `http://${currentIPAddress}:${port}`; // Construct the URL
-        
-            window.location.href = url; // Redirect to the dynamic URL
+        function goBack(isAuthenticated) {
+
+            if (isAuthenticated === "true") {
+                window.location.href = '/dashboard';
+            } else {
+                window.history.back();
+            }
         }
-        
-        
+
+
     </script>
 </body>
 </html>

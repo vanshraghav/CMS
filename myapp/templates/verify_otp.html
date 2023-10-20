@@ -73,7 +73,7 @@
             background: #FF4D4D !important;
             outline: none;
         }
-    </style>        
+    </style>
 </head>
 <body>
     <div class="container">
@@ -94,47 +94,46 @@
             {% csrf_token %}
             <input type="hidden" id="otpInput" name="otp" value="">
             <input type="hidden" name="email" value="{{ email }}">
-            <button type="submit" class="btn btn-success">Verify</button>
+            <button type="submit" class="btn btn-success" id="verifyButton">Verify</button>
         </form>
-        
+
     </div>
     <script>
-        // Updated handleInput function to correctly handle OTP input
-        function handleInput(event, nextBox) {
-            const currentBox = event.target;
-            const otpInput = document.getElementById('otpInput');
-        
-            // If backspace is pressed, clear the current and next box values
-            if (event.inputType === 'deleteContentBackward') {
-                otpInput.value = otpInput.value.slice(0, -1);
-                for (let i = nextBox; i <= 6; i++) {
-                    const box = document.querySelector(`.otp-box:nth-child(${i})`);
-                    box.value = '';
-                }
-            } else {
-                otpInput.value += currentBox.value;
+    function handleInput(event, nextBox) {
+        const currentBox = event.target;
+        const otpInput = document.getElementById('otpInput');
+
+        if (event.inputType === 'deleteContentBackward') {
+            otpInput.value = otpInput.value.slice(0, -1);
+            for (let i = nextBox; i <= 6; i++) {
+                const box = document.querySelector(`.otp-box:nth-child(${i})`);
+                box.value = '';
             }
-        
-            if (nextBox <= 6) {
-                const nextBoxElement = document.querySelector(`.otp-box:nth-child(${nextBox})`);
-                nextBoxElement.focus();
-            }
-        
-            if (nextBox === 7) {
-                // Automatically submit the form when all boxes are filled
-                document.getElementById('otpForm').submit();
-            }
+        } else {
+            otpInput.value += currentBox.value;
         }
 
-        // Event listener setup for OTP input boxes
-        const otpBoxes = document.querySelectorAll('.otp-box');
+        if (nextBox <= 6) {
+            const nextBoxElement = document.querySelector(`.otp-box:nth-child(${nextBox})`);
+            nextBoxElement.focus();
+        }
 
-        otpBoxes.forEach((box, index) => {
-            box.addEventListener('input', (event) => {
-                handleInput(event, index + 2);  // Index is zero-based, so we add 2 for the next box
-            });
+        if (nextBox === 7) {
+            // Automatically submit the form when all boxes are filled
+            document.getElementById('verifyButton').disabled = true;
+            document.getElementById('verifyButton').textContent = 'Verifying...';
+            document.getElementById('otpForm').submit();
+        }
+    }
+
+    const otpBoxes = document.querySelectorAll('.otp-box');
+
+    otpBoxes.forEach((box, index) => {
+        box.addEventListener('input', (event) => {
+            handleInput(event, index + 2);
         });
-        
-    </script>
+    });
+</script>
+
 </body>
 </html>

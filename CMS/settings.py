@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nf)ks-sn&fm8=0)_&!d(@t0@!j3+nua293b39im=zst%gj@-93'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['vr7017366984.pythonanywhere.com']
 
@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myapp.middleware.NoCacheMiddleware'
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -58,6 +59,14 @@ EMAIL_HOST_USER = 'vr7017366984@gmail.com'
 EMAIL_HOST_PASSWORD = 'mhqhiawojxwnhwfw'
 
 ROOT_URLCONF = 'CMS.urls'
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_URL = '/login'
+LOGOUT_REDIRECT_URL = '/login'
 
 TEMPLATES = [
     {
